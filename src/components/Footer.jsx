@@ -25,7 +25,7 @@ export default function Footer() {
 
         <div>
           <img
-            src="/src/logo.png"
+            src="/logo.png"
             alt="Paleko Holdings"
             style={{height:'36px',width:'auto',objectFit:'contain',marginBottom:'14px',filter:'brightness(0) invert(1)',opacity:0.9}}
           />

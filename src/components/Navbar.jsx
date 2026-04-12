@@ -319,7 +319,7 @@ export default function Navbar() {
         <nav style={{maxWidth:'1280px',margin:'0 auto',padding:'0 40px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'58px'}}>
 
           <a href="/" style={{display:'flex',alignItems:'center',textDecoration:'none',flexShrink:0}}>
-            <img src="/src/logo.png" alt="Paleko Holdings" style={{height:'40px',width:'auto',objectFit:'contain'}} />
+            <img src="/logo.png" alt="Paleko Holdings" style={{height:'40px',width:'auto',objectFit:'contain'}} />
           </a>
 
           <ul className="desktop-nav" style={{display:'flex',gap:'28px',listStyle:'none',margin:0,padding:0,alignItems:'center'}}>

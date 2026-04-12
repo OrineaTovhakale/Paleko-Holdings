@@ -1,4 +1,6 @@
+import { useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
+import emailjs from '@emailjs/browser'
 
 const CONTACT = [
   {
@@ -51,6 +53,25 @@ const SERVICE_OPTIONS = [
 
 export default function CTA() {
   const ref = useReveal()
+  const formRef = useRef(null)
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    setSending(true)
+    emailjs.sendForm(
+      'service_em8ik7l',
+      'template_oaotjof',
+      formRef.current,
+      '3ntGiPYqXnIXHjwaT'
+    ).then(() => {
+      setSending(false)
+      setSent(true)
+    }).catch(() => {
+      setSending(false)
+    })
+  }
 
   return (
     <section
@@ -67,9 +88,7 @@ export default function CTA() {
       />
       <div style={{position:'absolute',left:0,top:0,bottom:0,width:'3px',background:'linear-gradient(to bottom, transparent, #2A9D5C, transparent)'}} />
       <div style={{position:'absolute',top:0,left:0,right:0,height:'1px',background:'linear-gradient(to right, transparent, rgba(42,157,92,0.4), transparent)'}} />
-
       <div className="cta-section" style={{position:'relative',zIndex:1}}>
-
         <div className="reveal">
           <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'16px'}}>
             <span style={{width:'24px',height:'1px',background:'#2A9D5C',display:'block'}} />
@@ -109,51 +128,67 @@ export default function CTA() {
             No obligation. We'll get back to you within 24 hours.
           </p>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-            {['First Name', 'Last Name'].map(label => (
-              <div key={label}>
-                <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>
-                  {label}
-                </p>
-                <input type="text" placeholder={label === 'First Name' ? 'Thabo' : 'Nkosi'} className="cta-input" />
-              </div>
-            ))}
-          </div>
-
-          <div style={{marginBottom:'12px'}}>
-            <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Phone Number</p>
-            <input type="tel" placeholder="+27 63 753 5488" className="cta-input" />
-          </div>
-
-          <div style={{marginBottom:'12px'}}>
-            <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Service Required</p>
-            <select className="cta-select">
-              <option value="">Select a service...</option>
-              {SERVICE_OPTIONS.map(o => (
-                <option key={o} value={o}>{o}</option>
+          {/* FORM STARTS HERE - exactly as instructed */}
+          <form ref={formRef} onSubmit={handleSubmit}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
+              {['First Name', 'Last Name'].map(label => (
+                <div key={label}>
+                  <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>
+                    {label}
+                  </p>
+                  <input 
+                    type="text" 
+                    placeholder={label === 'First Name' ? 'Thabo' : 'Nkosi'} 
+                    className="cta-input" 
+                    name={label === 'First Name' ? 'first_name' : 'last_name'}
+                  />
+                </div>
               ))}
-            </select>
-          </div>
+            </div>
 
-          <div style={{marginBottom:'20px'}}>
-            <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Message (optional)</p>
-            <input type="text" placeholder="Brief description of what you need..." className="cta-input" />
-          </div>
+            <div style={{marginBottom:'12px'}}>
+              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Phone Number</p>
+              <input type="tel" placeholder="+27 63 753 5488" className="cta-input" name="phone" />
+            </div>
 
-          <button className="cta-submit">
-            <span style={{fontSize:'13px',fontWeight:600,color:'#fff',letterSpacing:'0.2px'}}>Send My Request</span>
-            <span style={{width:'32px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <svg viewBox="0 0 14 14" fill="none" style={{width:'14px',height:'14px'}}>
-                <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          </button>
+            <div style={{marginBottom:'12px'}}>
+              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Service Required</p>
+              <select className="cta-select" name="service">
+                <option value="">Select a service...</option>
+                {SERVICE_OPTIONS.map(o => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{marginBottom:'20px'}}>
+              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Message (optional)</p>
+              <input type="text" placeholder="Brief description of what you need..." className="cta-input" name="message" />
+            </div>
+
+            {/* Updated submit button exactly as instructed */}
+            {sent ? (
+              <div style={{background:'rgba(42,157,92,0.15)',border:'1px solid rgba(42,157,92,0.3)',borderRadius:'10px',padding:'16px',textAlign:'center',marginTop:'6px'}}>
+                <p style={{fontSize:'13px',fontWeight:600,color:'#6FD4A0'}}>Request Sent!</p>
+                <p style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>We will get back to you within 24 hours.</p>
+              </div>
+            ) : (
+              <button type="submit" className="cta-submit" disabled={sending}>
+                <span style={{fontSize:'13px',fontWeight:600,color:'#fff'}}>{sending ? 'Sending...' : 'Send My Request'}</span>
+                <span style={{width:'32px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <svg viewBox="0 0 14 14" fill="none" style={{width:'14px',height:'14px'}}>
+                    <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+            )}
+          </form>
+          {/* FORM ENDS HERE */}
 
           <p style={{fontSize:'10px',color:'rgba(255,255,255,0.2)',textAlign:'center',marginTop:'14px',lineHeight:1.5}}>
             Your details are private and will never be shared with third parties.
           </p>
         </div>
-
       </div>
     </section>
   )

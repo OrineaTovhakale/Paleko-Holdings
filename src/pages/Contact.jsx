@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import useReveal from '../hooks/useReveal'
+import emailjs from '@emailjs/browser'
 
 const s = {
   page: { background: '#F8F7F4', minHeight: '100vh' },
@@ -75,7 +76,11 @@ const HOURS = [
 
 export default function Contact() {
   const [loaded, setLoaded] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState(false)
   const heroRef = useRef(null)
+  const formRef = useRef(null)
   const sectionRef = useReveal()
 
   useEffect(() => {
@@ -84,6 +89,24 @@ export default function Contact() {
   }, [])
 
   const heroClass = loaded ? 'contact-loaded' : ''
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    setSending(true)
+    setError(false)
+    emailjs.sendForm(
+      'service_em8ik7l',
+      'template_oaotjof',
+      formRef.current,
+      '3ntGiPYqXnIXHjwaT'
+    ).then(() => {
+      setSending(false)
+      setSent(true)
+    }).catch(() => {
+      setSending(false)
+      setError(true)
+    })
+  }
 
   return (
     <>
@@ -157,56 +180,72 @@ export default function Contact() {
               <h2 style={s.formTitle}>Send Us a Message</h2>
               <p style={s.formSub}>Fill in the form below and we will get back to you within 24 hours.</p>
 
-              <div style={s.fieldRow}>
-                <div style={s.fieldGroup}>
-                  <label style={s.fieldLabel}>First Name</label>
-                  <input type="text" placeholder="Thabo" className="contact-input" style={s.fieldInput} />
+              {sent ? (
+                <div style={{background:'#EDF7F2',border:'1px solid #C0E4D0',borderRadius:'12px',padding:'24px',textAlign:'center'}}>
+                  <p style={{fontSize:'14px',fontWeight:600,color:'#0F6E56',marginBottom:'6px'}}>Message Sent!</p>
+                  <p style={{fontSize:'12px',color:'#555',fontWeight:300}}>Thank you for reaching out. We will get back to you within 24 hours.</p>
                 </div>
-                <div style={s.fieldGroup}>
-                  <label style={s.fieldLabel}>Last Name</label>
-                  <input type="text" placeholder="Nkosi" className="contact-input" style={s.fieldInput} />
-                </div>
-              </div>
+              ) : (
+                <form ref={formRef} onSubmit={handleSubmit}>
+                  <div style={s.fieldRow}>
+                    <div style={s.fieldGroup}>
+                      <label style={s.fieldLabel}>First Name</label>
+                      <input name="first_name" type="text" placeholder="Thabo" required className="contact-input" style={s.fieldInput} />
+                    </div>
+                    <div style={s.fieldGroup}>
+                      <label style={s.fieldLabel}>Last Name</label>
+                      <input name="last_name" type="text" placeholder="Nkosi" required className="contact-input" style={s.fieldInput} />
+                    </div>
+                  </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.fieldLabel}>Email Address</label>
-                <input type="email" placeholder="Orinea@liftmediasolutions.com" className="contact-input" style={s.fieldInput} />
-              </div>
+                  <div style={s.fieldGroup}>
+                    <label style={s.fieldLabel}>Email Address</label>
+                    <input name="from_email" type="email" placeholder="you@example.com" required className="contact-input" style={s.fieldInput} />
+                  </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.fieldLabel}>Phone Number</label>
-                <input type="tel" placeholder="+27 63 753 5488" className="contact-input" style={s.fieldInput} />
-              </div>
+                  <div style={s.fieldGroup}>
+                    <label style={s.fieldLabel}>Phone Number</label>
+                    <input name="phone" type="tel" placeholder="+27 00 000 0000" className="contact-input" style={s.fieldInput} />
+                  </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.fieldLabel}>Service Required</label>
-                <select className="contact-input" style={Object.assign({}, s.fieldInput, {appearance:'none',color:'#666'})}>
-                  <option value="">Select a service...</option>
-                  {SERVICE_OPTIONS.map(function(o, i) {
-                    return <option key={i} value={o}>{o}</option>
-                  })}
-                </select>
-              </div>
+                  <div style={s.fieldGroup}>
+                    <label style={s.fieldLabel}>Service Required</label>
+                    <select name="service" required className="contact-input" style={Object.assign({}, s.fieldInput, {appearance:'none',color:'#666'})}>
+                      <option value="">Select a service...</option>
+                      {SERVICE_OPTIONS.map(function(o, i) {
+                        return <option key={i} value={o}>{o}</option>
+                      })}
+                    </select>
+                  </div>
 
-              <div style={s.fieldGroup}>
-                <label style={s.fieldLabel}>Message</label>
-                <textarea
-                  placeholder="Tell us a bit about what you need..."
-                  rows={4}
-                  className="contact-input"
-                  style={Object.assign({}, s.fieldInput, {resize:'none',lineHeight:1.6})}
-                />
-              </div>
+                  <div style={s.fieldGroup}>
+                    <label style={s.fieldLabel}>Message</label>
+                    <textarea
+                      name="message"
+                      placeholder="Tell us a bit about what you need..."
+                      rows={4}
+                      className="contact-input"
+                      style={Object.assign({}, s.fieldInput, {resize:'none',lineHeight:1.6})}
+                    />
+                  </div>
 
-              <button className="contact-submit" style={s.submitBtn}>
-                <span style={s.submitLabel}>Send Message</span>
-                <span style={s.submitIcon}>
-                  <svg viewBox="0 0 14 14" fill="none" style={{width:'14px',height:'14px'}}>
-                    <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
-              </button>
-              <p style={s.privacy}>Your details are private and will never be shared with third parties.</p>
+                  {error && (
+                    <p style={{fontSize:'12px',color:'#E24B4A',marginBottom:'12px'}}>
+                      Something went wrong. Please try again or call us directly.
+                    </p>
+                  )}
+
+                  <button type="submit" className="contact-submit" style={s.submitBtn} disabled={sending}>
+                    <span style={s.submitLabel}>{sending ? 'Sending...' : 'Send Message'}</span>
+                    <span style={s.submitIcon}>
+                      <svg viewBox="0 0 14 14" fill="none" style={{width:'14px',height:'14px'}}>
+                        <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </button>
+                  <p style={s.privacy}>Your details are private and will never be shared with third parties.</p>
+                </form>
+              )}
             </div>
 
           </div>

@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import useReveal from '../hooks/useReveal'
 import emailjs from '@emailjs/browser'
 
 const CONTACT = [
@@ -52,7 +51,6 @@ const SERVICE_OPTIONS = [
 ]
 
 export default function CTA() {
-  const ref = useReveal()
   const formRef = useRef(null)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -76,9 +74,7 @@ export default function CTA() {
   return (
     <section
       id="contact"
-      ref={ref}
-      className="cta-outer"
-      style={{position:'relative',overflow:'hidden',padding:'80px 56px',background:'#0D1F0F'}}
+      style={{position:'relative',overflow:'hidden',padding:'clamp(48px, 8vw, 80px) clamp(24px, 5vw, 56px)',background:'#0D1F0F'}}
     >
       <img
         src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1400&q=80&fit=crop"
@@ -88,39 +84,43 @@ export default function CTA() {
       />
       <div style={{position:'absolute',left:0,top:0,bottom:0,width:'3px',background:'linear-gradient(to bottom, transparent, #2A9D5C, transparent)'}} />
       <div style={{position:'absolute',top:0,left:0,right:0,height:'1px',background:'linear-gradient(to right, transparent, rgba(42,157,92,0.4), transparent)'}} />
-      <div className="cta-section" style={{position:'relative',zIndex:1}}>
-        <div className="reveal">
+
+      <div className="cta-grid-responsive" style={{position:'relative',zIndex:1}}>
+
+        <div>
           <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'16px'}}>
             <span style={{width:'24px',height:'1px',background:'#2A9D5C',display:'block'}} />
             <span style={{fontSize:'10px',fontWeight:600,letterSpacing:'2px',textTransform:'uppercase',color:'#2A9D5C'}}>
               Get In Touch
             </span>
           </div>
-          <h2 style={{fontFamily:"'Playfair Display', serif",fontSize:'34px',fontWeight:700,color:'#fff',lineHeight:1.15,marginBottom:'16px'}}>
+          <h2 style={{fontFamily:"'Playfair Display', serif",fontSize:'clamp(26px, 4vw, 34px)',fontWeight:700,color:'#fff',lineHeight:1.15,marginBottom:'16px'}}>
             Let's Talk About<br />
             Your <em style={{fontStyle:'italic',color:'#6FD4A0'}}>Next Project.</em>
           </h2>
-          <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',lineHeight:1.85,fontWeight:300,marginBottom:'36px',maxWidth:'340px'}}>
+          <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',lineHeight:1.85,fontWeight:300,marginBottom:'32px',maxWidth:'340px'}}>
             Whether it's a residential rewire, a solar installation, power tool
             repair or clearing your grounds — our team responds fast, works clean
             and delivers right the first time.
           </p>
           <div style={{display:'flex',flexDirection:'column'}}>
-            {CONTACT.map(({label, value, icon}) => (
-              <div key={label} className="cta-contact-item">
-                <div className="cta-icon-wrap">{icon}</div>
-                <div>
-                  <p style={{fontSize:'9px',fontWeight:600,letterSpacing:'1px',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'3px'}}>
-                    {label}
-                  </p>
-                  <p style={{fontSize:'13px',color:'#fff',fontWeight:400,margin:0}}>{value}</p>
+            {CONTACT.map(function(item) {
+              return (
+                <div key={item.label} className="cta-contact-item">
+                  <div className="cta-icon-wrap">{item.icon}</div>
+                  <div>
+                    <p style={{fontSize:'9px',fontWeight:600,letterSpacing:'1px',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'3px'}}>
+                      {item.label}
+                    </p>
+                    <p style={{fontSize:'13px',color:'#fff',fontWeight:400,margin:0}}>{item.value}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
-        <div className="reveal reveal-delay-2" style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'16px',padding:'32px'}}>
+        <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'16px',padding:'clamp(24px, 4vw, 32px)'}}>
           <h3 style={{fontFamily:"'Playfair Display', serif",fontSize:'20px',color:'#fff',fontWeight:700,marginBottom:'6px'}}>
             Request a Free Quote
           </h3>
@@ -128,67 +128,64 @@ export default function CTA() {
             No obligation. We'll get back to you within 24 hours.
           </p>
 
-          {/* FORM STARTS HERE - exactly as instructed */}
-          <form ref={formRef} onSubmit={handleSubmit}>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-              {['First Name', 'Last Name'].map(label => (
-                <div key={label}>
-                  <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>
-                    {label}
-                  </p>
-                  <input 
-                    type="text" 
-                    placeholder={label === 'First Name' ? 'Thabo' : 'Nkosi'} 
-                    className="cta-input" 
-                    name={label === 'First Name' ? 'first_name' : 'last_name'}
-                  />
-                </div>
-              ))}
+          {sent ? (
+            <div style={{background:'rgba(42,157,92,0.15)',border:'1px solid rgba(42,157,92,0.3)',borderRadius:'10px',padding:'20px',textAlign:'center'}}>
+              <p style={{fontSize:'14px',fontWeight:600,color:'#6FD4A0',marginBottom:'6px'}}>Request Sent!</p>
+              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.5)'}}>We will get back to you within 24 hours.</p>
             </div>
-
-            <div style={{marginBottom:'12px'}}>
-              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Phone Number</p>
-              <input type="tel" placeholder="+27 63 753 5488" className="cta-input" name="phone" />
-            </div>
-
-            <div style={{marginBottom:'12px'}}>
-              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Service Required</p>
-              <select className="cta-select" name="service">
-                <option value="">Select a service...</option>
-                {SERVICE_OPTIONS.map(o => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{marginBottom:'20px'}}>
-              <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Message (optional)</p>
-              <input type="text" placeholder="Brief description of what you need..." className="cta-input" name="message" />
-            </div>
-
-            {/* Updated submit button exactly as instructed */}
-            {sent ? (
-              <div style={{background:'rgba(42,157,92,0.15)',border:'1px solid rgba(42,157,92,0.3)',borderRadius:'10px',padding:'16px',textAlign:'center',marginTop:'6px'}}>
-                <p style={{fontSize:'13px',fontWeight:600,color:'#6FD4A0'}}>Request Sent!</p>
-                <p style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',marginTop:'4px'}}>We will get back to you within 24 hours.</p>
+          ) : (
+            <form ref={formRef} onSubmit={handleSubmit}>
+              <div className="field-row-responsive" style={{marginBottom:'12px'}}>
+                {['First Name', 'Last Name'].map(function(label) {
+                  return (
+                    <div key={label}>
+                      <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>{label}</p>
+                      <input
+                        name={label === 'First Name' ? 'first_name' : 'last_name'}
+                        type="text"
+                        placeholder={label === 'First Name' ? 'Thabo' : 'Nkosi'}
+                        className="cta-input"
+                      />
+                    </div>
+                  )
+                })}
               </div>
-            ) : (
+
+              <div style={{marginBottom:'12px'}}>
+                <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Phone Number</p>
+                <input name="phone" type="tel" placeholder="+27 00 000 0000" className="cta-input" />
+              </div>
+
+              <div style={{marginBottom:'12px'}}>
+                <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Service Required</p>
+                <select name="service" className="cta-select">
+                  <option value="">Select a service...</option>
+                  {SERVICE_OPTIONS.map(function(o) {
+                    return <option key={o} value={o}>{o}</option>
+                  })}
+                </select>
+              </div>
+
+              <div style={{marginBottom:'20px'}}>
+                <p style={{fontSize:'10px',fontWeight:500,letterSpacing:'0.5px',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>Message (optional)</p>
+                <input name="message" type="text" placeholder="Brief description of what you need..." className="cta-input" />
+              </div>
+
               <button type="submit" className="cta-submit" disabled={sending}>
                 <span style={{fontSize:'13px',fontWeight:600,color:'#fff'}}>{sending ? 'Sending...' : 'Send My Request'}</span>
                 <span style={{width:'32px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center'}}>
                   <svg viewBox="0 0 14 14" fill="none" style={{width:'14px',height:'14px'}}>
-                    <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2 7h10M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
               </button>
-            )}
-          </form>
-          {/* FORM ENDS HERE */}
-
-          <p style={{fontSize:'10px',color:'rgba(255,255,255,0.2)',textAlign:'center',marginTop:'14px',lineHeight:1.5}}>
-            Your details are private and will never be shared with third parties.
-          </p>
+              <p style={{fontSize:'10px',color:'rgba(255,255,255,0.2)',textAlign:'center',marginTop:'12px'}}>
+                Your details are private and will never be shared with third parties.
+              </p>
+            </form>
+          )}
         </div>
+
       </div>
     </section>
   )
